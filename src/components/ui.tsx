@@ -49,7 +49,7 @@ export function PageHeader({ title, sub, actions }: { title: string; sub?: strin
 
 export function Card({ title, right, children, className, pad = true }: { title?: string; right?: ReactNode; children: ReactNode; className?: string; pad?: boolean }) {
   return (
-    <section className={cn("rounded-lg border border-line bg-white", className)}>
+    <section className={cn("min-w-0 rounded-lg border border-line bg-white", className)}>
       {(title || right) && (
         <div className="flex items-center justify-between gap-2 border-b border-line px-4 py-3">
           {title && <h2 className="text-sm font-bold">{title}</h2>}
