@@ -3,22 +3,64 @@
 @tailwind components;
 @tailwind utilities;
 
-:root { color-scheme: light; }
-html { -webkit-text-size-adjust: 100%; }
-body { @apply bg-canvas text-text font-sans antialiased; }
-td, th { font-variant-numeric: tabular-nums; }
-:focus-visible { outline: 2px solid #0B5CAD; outline-offset: 2px; border-radius: 4px; }
-dialog::backdrop { background: rgba(15, 34, 51, 0.5); }
-dialog { border: 0; padding: 0; }
+:root {
+  color-scheme: light;
+}
+html {
+  -webkit-text-size-adjust: 100%;
+}
+body {
+  @apply bg-canvas text-text font-sans antialiased;
+}
+td,
+th {
+  font-variant-numeric: tabular-nums;
+}
+:focus-visible {
+  outline: 2px solid #0b5cad;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+dialog::backdrop {
+  background: rgba(15, 34, 51, 0.5);
+}
+dialog {
+  border: 0;
+  padding: 0;
+}
 
-@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
 
 @media print {
-  @page { size: A4; margin: 14mm; }
-  body { background: #fff; }
-  .no-print { display: none !important; }
-  .print-area { box-shadow: none !important; border: 0 !important; padding: 0 !important; }
-  .print-break { break-before: page; }
-  aside, header.app-header { display: none !important; }
-  main { padding: 0 !important; margin: 0 !important; }
+  @page {
+    size: A4;
+    margin: 14mm;
+  }
+  body {
+    background: #fff;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .print-area {
+    box-shadow: none !important;
+    border: 0 !important;
+    padding: 0 !important;
+  }
+  .print-break {
+    break-before: page;
+  }
+  aside,
+  header.app-header {
+    display: none !important;
+  }
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
 }

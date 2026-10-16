@@ -31,7 +31,9 @@ export function addMonths(m: string, n: number) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
 }
 export function daysBetween(a: string, b: string) {
-  return Math.round((new Date(b + "T12:00:00").getTime() - new Date(a + "T12:00:00").getTime()) / 86400000);
+  return Math.round(
+    (new Date(b + "T12:00:00").getTime() - new Date(a + "T12:00:00").getTime()) / 86400000,
+  );
 }
 export function toCsv(rows: (string | number | null | undefined)[][]) {
   const esc = (v: string | number | null | undefined) => {
