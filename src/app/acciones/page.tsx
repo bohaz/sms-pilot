@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Download, Plus } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { isOverdue } from "@/lib/derive";
-import { downloadFile, fmtDate, today, toCsv } from "@/lib/format";
+import { daysUntil, downloadFile, fmtDate, today, toCsv } from "@/lib/format";
 import type { ActionItem } from "@/lib/types";
 import { Badge, Button, Card, Empty, PageHeader, Table, Td, Th, cn } from "@/components/ui";
 import { ActionForm, CloseActionForm } from "@/components/forms";
@@ -158,15 +158,7 @@ export default function Acciones() {
                       {fmtDate(a.dueDate)}
                       {a.status !== "Cerrada" && a.dueDate >= today() && (
                         <span className="block text-xs text-muted">
-                          en{" "}
-                          {Math.max(
-                            0,
-                            Math.round(
-                              (new Date(a.dueDate).getTime() - new Date(today()).getTime()) /
-                                86400000,
-                            ),
-                          )}{" "}
-                          días
+                          en {daysUntil(a.dueDate)} días
                         </span>
                       )}
                     </Td>

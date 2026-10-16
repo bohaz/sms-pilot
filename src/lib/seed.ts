@@ -8,7 +8,7 @@ import type {
   ReportStatus,
 } from "./types";
 import { RAV5, TENANT, FLEET } from "./tenant";
-import { addDays, addMonths, daysBetween, monthKey } from "./format";
+import { addDays, addMonths, daysBetween, monthKey, toDateKey } from "./format";
 import { appendAudit } from "./audit";
 
 export interface Snapshot {
@@ -149,7 +149,7 @@ const MOR_T: [string, string, string, string][] = [
 ];
 
 export function buildSeed(now = new Date()): Snapshot {
-  const t = now.toISOString().slice(0, 10);
+  const t = toDateKey(now);
   const cm = monthKey(t);
   const months = Array.from({ length: 9 }, (_, i) => addMonths(cm, i - 8));
   const ops: OpsMonth[] = months.map((m, i) => ({
