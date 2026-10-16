@@ -4,11 +4,9 @@ import type { ActionItem, AuditEntry, Hazard, OpsMonth, Rav5State, Report } from
 import { buildSeed, type Snapshot } from "./seed";
 import { appendAudit } from "./audit";
 import { TENANT } from "./tenant";
+import { nextCode, nextReportCode } from "./codes";
 
 const uid = () => Math.random().toString(36).slice(2, 10);
-const pad = (n: number) => String(n).padStart(3, "0");
-const nextNum = (codes: string[]) =>
-  codes.reduce((m, c) => Math.max(m, Number(c.split("-").pop()) || 0), 0) + 1;
 
 type NewReport = Omit<
   Report,
@@ -46,16 +44,10 @@ export const useStore = create<State>()(
 
       addReport: (input) => {
         const s = get();
-        const year = input.date.slice(0, 4);
-        const n = nextNum(
-          s.reports
-            .filter((r) => r.type === input.type && r.date.startsWith(year))
-            .map((r) => r.code),
-        );
         const rep: Report = {
           ...input,
           id: uid(),
-          code: `${input.type}-${year}-${pad(n)}`,
+          code: nextReportCode(input.type, input.date, s.reports),
           status: "Nuevo",
           hazardIds: [],
           notifiedAuthority: false,
@@ -88,7 +80,10 @@ export const useStore = create<State>()(
         const h: Hazard = {
           ...input,
           id: uid(),
-          code: `PEL-${pad(nextNum(s.hazards.map((x) => x.code)))}`,
+          code: nextCode(
+            "PEL",
+            s.hazards.map((x) => x.code),
+          ),
           createdAt: new Date().toISOString(),
         };
         set({
@@ -112,7 +107,10 @@ export const useStore = create<State>()(
         const a: ActionItem = {
           ...input,
           id: uid(),
-          code: `CAP-${pad(nextNum(s.actions.map((x) => x.code)))}`,
+          code: nextCode(
+            "CAP",
+            s.actions.map((x) => x.code),
+          ),
           status: "Abierta",
           createdAt: new Date().toISOString(),
         };
