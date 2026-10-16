@@ -10,10 +10,38 @@ export const semFat = (f: number): Sem => (f === 0 ? "VERDE" : "ROJO");
 export const semRate = (r: number): Sem => (r === 0 ? "VERDE" : r <= 2 ? "AMARILLO" : "ROJO");
 
 export const SPI_DEFS = [
-  { key: "inc", name: "Incidentes reportados (MOR)", how: "MOR del mes", green: "0", yellow: "1", red: "2 o más" },
-  { key: "asr", name: "Cultura de reporte (ASR)", how: "ASR del mes", green: "2 o más", yellow: "1", red: "0" },
-  { key: "fat", name: "Excedencias de fatiga", how: "Excedencias de los límites de tiempo de vuelo y servicio", green: "0", yellow: "—", red: "1 o más" },
-  { key: "rate", name: "Tasa de incidentes", how: "(MOR ÷ vuelos) × 100", green: "0 %", yellow: "hasta 2 %", red: "más de 2 %" },
+  {
+    key: "inc",
+    name: "Incidentes reportados (MOR)",
+    how: "MOR del mes",
+    green: "0",
+    yellow: "1",
+    red: "2 o más",
+  },
+  {
+    key: "asr",
+    name: "Cultura de reporte (ASR)",
+    how: "ASR del mes",
+    green: "2 o más",
+    yellow: "1",
+    red: "0",
+  },
+  {
+    key: "fat",
+    name: "Excedencias de fatiga",
+    how: "Excedencias de los límites de tiempo de vuelo y servicio",
+    green: "0",
+    yellow: "—",
+    red: "1 o más",
+  },
+  {
+    key: "rate",
+    name: "Tasa de incidentes",
+    how: "(MOR ÷ vuelos) × 100",
+    green: "0 %",
+    yellow: "hasta 2 %",
+    red: "más de 2 %",
+  },
 ];
 
 export interface SpiRow {
@@ -55,4 +83,8 @@ export function buildSpiRows(ops: OpsMonth[], reports: Report[]): SpiRow[] {
     });
 }
 
-export const SEM_TONE: Record<Sem, "ok" | "warn" | "bad"> = { VERDE: "ok", AMARILLO: "warn", ROJO: "bad" };
+export const SEM_TONE: Record<Sem, "ok" | "warn" | "bad"> = {
+  VERDE: "ok",
+  AMARILLO: "warn",
+  ROJO: "bad",
+};

@@ -1,6 +1,11 @@
 export type ReportType = "ASR" | "MOR";
 export type ReportStatus = "Nuevo" | "En análisis" | "Acción abierta" | "Cerrado";
-export const REPORT_STATUSES: ReportStatus[] = ["Nuevo", "En análisis", "Acción abierta", "Cerrado"];
+export const REPORT_STATUSES: ReportStatus[] = [
+  "Nuevo",
+  "En análisis",
+  "Acción abierta",
+  "Cerrado",
+];
 
 export type Probability = 1 | 2 | 3 | 4 | 5;
 export type Severity = "A" | "B" | "C" | "D" | "E";
