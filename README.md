@@ -1,59 +1,112 @@
 # Vigía SMS
 
-Sistema de gestión de seguridad operacional (SMS) para operadores aéreos venezolanos. Versión piloto para demostración.
+[![CI](https://github.com/bohaz/sms-pilot/actions/workflows/ci.yml/badge.svg)](https://github.com/bohaz/sms-pilot/actions/workflows/ci.yml)
 
-Estructura del sistema basada en la **RAV 5** (4 componentes, 12 elementos) y el **Anexo 19** de la OACI.
+Safety Management System (SMS) for Venezuelan airline operators, built as a pilot to demo to prospective clients. It follows the structure of **RAV 5**, the Venezuelan regulation based on **ICAO Annex 19**: 4 components and 12 elements.
 
-## Publicar gratis en Vercel
+**Live demo:** [vigiasmspilot.vercel.app](https://vigiasmspilot.vercel.app/) · The interface is in Spanish, the language of its users. Demo data only; it resets from _Configuración_.
 
-1. Suba esta carpeta a un repositorio de GitHub.
-2. En vercel.com, elija **Add New > Project** e importe el repositorio.
-3. No cambie ninguna configuración. Vercel detecta Next.js solo. Pulse **Deploy**.
+## What it does
 
-Para probar en su equipo: `npm install` y luego `npm run dev` (http://localhost:3000).
+| Module              | Purpose                                                                                                                            |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| Dashboard           | Monthly traffic lights, residual risk matrix, alerts and recent activity                                                           |
+| ASR and MOR reports | Voluntary and mandatory occurrence reports: intake, filters, analysis status, links to hazards, authority notification, CSV export |
+| Hazards and risk    | Hazard register with initial and residual risk on the ICAO Doc 9859 matrix                                                         |
+| Actions             | Corrective and preventive actions with owners, due dates, overdue tracking and mandatory closure evidence                          |
+| Indicators          | Safety performance indicators (SPI) with traffic lights, trends and editable monthly data                                          |
+| RAV 5 compliance    | Status and evidence for each of the 12 elements                                                                                    |
+| Reports             | Period report ready to print or save as PDF, stamped with the audit log hash                                                       |
+| Audit log           | Hash-chained log (SHA-256) with an integrity check                                                                                 |
 
-## Qué incluye el piloto
+### Tamper-evident audit log
 
-| Módulo | Qué hace |
-|---|---|
-| Panel | Semáforos del mes, matriz de riesgo residual, alertas y actividad reciente |
-| Reportes ASR y MOR | Registro, filtros, estados de análisis, vínculo con peligros, marca de notificación a la autoridad, exportación CSV |
-| Peligros y riesgos | Registro con riesgo inicial y residual (matriz OACI Doc 9859) |
-| Acciones | Responsables, fechas límite, vencimientos y evidencia de cierre obligatoria |
-| Indicadores | SPI con semáforos, tendencias y registro mensual editable |
-| Cumplimiento RAV 5 | Estado y evidencia de cada uno de los 12 elementos |
-| Informes | Informe del período listo para imprimir o guardar como PDF, con huella de la bitácora |
-| Auditoría | Bitácora encadenada con SHA-256 y verificación de integridad |
+Every change goes through the store and is written to the audit log. Each entry stores the SHA-256 hash of the previous one, so editing or deleting any past entry breaks the chain, and the integrity check reports exactly where. The demo includes a _Simular manipulación_ button to show it.
 
-## Guion de demostración (5 minutos)
+## Tech stack
 
-1. **Panel:** muestre lo que requiere atención y la matriz de riesgo.
-2. **Reportes:** cree un MOR, cámbielo a "En análisis", marque la notificación y cree una acción desde el mismo reporte.
-3. **Acciones:** cierre una acción con evidencia.
-4. **Indicadores:** cambie los vuelos de un mes y vea cómo se recalculan los semáforos.
-5. **Auditoría:** verifique la integridad, use "Simular manipulación" y verifique otra vez.
-6. **Informes:** genere el informe del trimestre y guárdelo como PDF.
+Next.js 15 (App Router) · React 19 · TypeScript (strict) · Tailwind CSS 3 · Zustand · Recharts · Vitest · ESLint · Prettier · GitHub Actions · Vercel
 
-Al terminar, en **Configuración** use "Restablecer datos de demostración".
+## Getting started
 
-## Arquitectura
+Requires Node.js 20 or later (see `.nvmrc`).
 
-- Next.js 15 (App Router), TypeScript, Tailwind CSS 3, Recharts, Zustand.
-- `src/lib/types.ts`: modelo de dominio.
-- `src/lib/store.ts`: **único punto de acceso a los datos**. Hoy persiste en el navegador; para producción se reemplaza por llamadas a una base de datos sin tocar las pantallas.
-- `src/lib/audit.ts`: bitácora encadenada. Cada registro incluye la huella del anterior.
-- `src/lib/risk.ts` y `src/lib/spi.ts`: matriz de riesgo y criterios de semáforo (configurables por operador).
-- `src/lib/tenant.ts`: datos de la organización y catálogo RAV 5. Es la base para el modo multiempresa.
-- `npm run verify` comprueba la huella SHA-256, los indicadores de la semilla y la detección de alteraciones.
+```bash
+npm install
+npm run dev        # http://localhost:3000
+```
 
-## Camino a producción
+| Script                        | What it does                                               |
+| ----------------------------- | ---------------------------------------------------------- |
+| `npm run dev`                 | Development server                                         |
+| `npm run build` / `npm start` | Production build and server                                |
+| `npm test`                    | Runs the test suite once (`test:watch` to keep it running) |
+| `npm run lint`                | ESLint with the Next.js rules                              |
+| `npm run typecheck`           | TypeScript without emitting files                          |
+| `npm run format`              | Formats the code with Prettier                             |
+| `npm run check`               | Lint, types, format check, tests and build (same as CI)    |
 
-1. **Base de datos y autenticación:** Supabase (Postgres) con seguridad por fila y una organización por operador.
-2. **Roles:** gerente de SMS, jefe de área, auditor, solo lectura.
-3. **Bitácora en el servidor:** la cadena de huellas se calcula y guarda del lado servidor, en tablas de solo inserción.
-4. **Adjuntos, correos de vencimiento y firma electrónica de informes.**
-5. **Metas de seguridad configurables** por operador.
+## Architecture
 
-## Advertencia sobre la normativa
+```
+src/
+├── app/            # One folder per module (App Router pages)
+├── components/
+│   ├── forms/      # One file per form; validation rules come from lib/
+│   ├── ui.tsx      # Small design system: Button, Card, Modal, Table…
+│   ├── Shell.tsx   # Layout, navigation and store hydration
+│   └── …           # Charts and risk matrix
+└── lib/            # Domain logic, framework-free and unit tested
+    ├── types.ts        # Domain model
+    ├── store.ts        # The only data access point (Zustand, persisted)
+    ├── audit.ts        # Hash-chained audit log
+    ├── sha256.ts       # Synchronous SHA-256 for the chain
+    ├── risk.ts         # ICAO risk matrix
+    ├── spi.ts          # Indicators and traffic-light criteria
+    ├── codes.ts        # Record codes (ASR-2026-004, PEL-012, CAP-007)
+    ├── validation.ts   # Form rules
+    ├── format.ts       # Dates in local time, labels and CSV
+    ├── tenant.ts       # Operator settings and RAV 5 catalog
+    └── seed.ts         # Demo data, generated relative to today
+```
 
-La estructura de componentes y elementos sigue lo publicado por el INAC. Los umbrales de los semáforos, los plazos de notificación y los criterios de reporte son valores de ejemplo. Antes de vender el sistema, valídelos con la edición vigente de la RAV 5 y con un especialista en cumplimiento aeronáutico venezolano.
+Key decisions:
+
+- **One data access point.** Pages never read storage directly; they call `store.ts`. The pilot persists to `localStorage`. Moving to a database means replacing the store's internals, not the screens.
+- **Every write is audited.** The store appends to the audit log in the same update as the change, so no change skips the log.
+- **Domain logic is plain TypeScript.** Risk, indicators, codes, validation and the audit chain don't import React or Next.js, which keeps them easy to test and to move to a server later.
+- **Dates are local.** Due dates and "today" use the user's time zone. Using UTC would mark actions as overdue a day early in the evening in Venezuela (UTC-4).
+- **Operator settings are isolated** in `tenant.ts`, as the starting point for multi-tenant support.
+
+## Testing
+
+```bash
+npm test
+```
+
+71 tests cover the domain logic:
+
+- **SHA-256** checked against `node:crypto`, including block-boundary and multi-byte cases.
+- **Audit chain:** linking, and detection of edited, deleted and forged entries.
+- **Risk matrix:** sample cells and the full 25-cell distribution.
+- **Indicators:** traffic-light thresholds, monthly counts, missing data.
+- **Dates:** run in `America/Caracas` to catch UTC off-by-one errors.
+- **Codes, validation, demo data invariants and store actions**, including that the audit chain stays valid after a series of changes.
+
+CI runs lint, type check, format check, tests and build on every pull request.
+
+## Road to production
+
+1. Database and authentication: Supabase (Postgres) with row-level security and one organization per operator.
+2. Roles: SMS manager, area head, auditor, read-only.
+3. Server-side audit log in append-only tables, with the hash chain computed on the server.
+4. Attachments, due-date email reminders and electronic signature for reports.
+5. Safety targets configurable per operator.
+
+## Regulatory note
+
+The component and element structure follows what INAC has published for RAV 5. Traffic-light thresholds, notification deadlines and reporting criteria are sample values and must be validated against the current edition of RAV 5 with an aviation compliance specialist before production use.
+
+## Author
+
+Ricardo Martínez · [Portfolio](https://ricardomartinez.vercel.app/) · [GitHub](https://github.com/bohaz)
